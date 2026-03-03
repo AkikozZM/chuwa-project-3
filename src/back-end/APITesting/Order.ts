@@ -45,6 +45,20 @@ export async function getOrdersByUserAPI(
   });
 }
 
+/** Get all orders (admin). GET /api/orders/admin/all */
+export async function getAllOrdersAPI(
+  page: number,
+  pageSize: number
+): Promise<ApiResult<OrderListResponse>> {
+  const q = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+  return orderServiceRequest<OrderListResponse>(`/api/orders/admin/all?${q.toString()}`, {
+    method: "GET",
+  });
+}
+
 export async function updateOrderAPI(
   id: string,
   payload: CreateOrderPayload
@@ -60,6 +74,18 @@ export async function cancelOrderAPI(
 ): Promise<ApiResult<IOrder>> {
   return orderServiceRequest<IOrder>(
     `/api/orders/${encodeURIComponent(id)}/cancel`,
+    { method: "POST" }
+  );
+}
+
+/**
+ * Confirm order — POST /api/orders/{id}/confirm
+ */
+export async function confirmOrderAPI(
+  id: string
+): Promise<ApiResult<IOrder>> {
+  return orderServiceRequest<IOrder>(
+    `/api/orders/${encodeURIComponent(id)}/confirm`,
     { method: "POST" }
   );
 }

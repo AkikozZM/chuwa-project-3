@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { selectUserId, selectIsLogin } from "../../features/authenticate/authenticate";
-import { getOrdersByUserAPI } from "../../back-end/APITesting/Order.ts";
+import { selectUserId, selectIsLogin, selectRole } from "../../features/authenticate/authenticate";
+import { getOrdersByUserAPI, getAllOrdersAPI } from "../../back-end/APITesting/Order.ts";
 import type { IOrder } from "../../back-end/models/Order";
 
 const PAGE_SIZE = 10;
@@ -12,6 +12,8 @@ export const MyOrdersPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const userId = useAppSelector(selectUserId);
   const isLogin = useAppSelector(selectIsLogin);
+  const role = useAppSelector(selectRole);
+  const isAdmin = role === "Admin";
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -27,16 +29,39 @@ export const MyOrdersPage: React.FC = () => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    getOrdersByUserAPI(userId, page, PAGE_SIZE)
-      .then((res) => {
+    async function load() {
+      if (isAdmin) {
+        const res = await getAllOrdersAPI(page, PAGE_SIZE);
         if (cancelled) return;
         if (res.success) {
           setOrders(res.data.content ?? []);
           setTotalPages(res.data.totalPages ?? 0);
+          setError(null);
+          return;
+        }
+        // Backend may not support admin "all orders" (e.g. 400) — fall back to admin's own orders
+        const fallback = await getOrdersByUserAPI(userId, page, PAGE_SIZE);
+        if (cancelled) return;
+        if (fallback.success) {
+          setOrders(fallback.data.content ?? []);
+          setTotalPages(fallback.data.totalPages ?? 0);
+          setError(null);
+        } else {
+          setError(fallback.error || "Failed to load orders.");
+        }
+      } else {
+        const res = await getOrdersByUserAPI(userId, page, PAGE_SIZE);
+        if (cancelled) return;
+        if (res.success) {
+          setOrders(res.data.content ?? []);
+          setTotalPages(res.data.totalPages ?? 0);
+          setError(null);
         } else {
           setError(res.error || "Failed to load orders.");
         }
-      })
+      }
+    }
+    load()
       .catch(() => {
         if (!cancelled) setError("Failed to load orders.");
       })
@@ -46,7 +71,7 @@ export const MyOrdersPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [userId, isLogin, page, navigate]);
+  }, [userId, isLogin, isAdmin, page, navigate]);
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
@@ -67,14 +92,16 @@ export const MyOrdersPage: React.FC = () => {
   return (
     <div className="flex flex-col gap-20 p-6 w-full h-full">
       <div className="flex flex-col justify-between items-center w-full h-full md:flex-row lg:flex-row">
-        <div className="text-3xl font-bold py-4 md:py-0 lg:py-0">My Orders</div>
+        <div className="text-3xl font-bold py-4 md:py-0 lg:py-0">{isAdmin ? "All Orders" : "My Orders"}</div>
       </div>
 
       {loading && <div className="text-center py-8">Loading...</div>}
       {error && <div className="text-center text-red-600 py-4">Error: {error}</div>}
 
       {!loading && !error && orders.length === 0 && (
-        <div className="text-center text-lg text-gray-600 py-8">You have no orders yet.</div>
+        <div className="text-center text-lg text-gray-600 py-8">
+          {isAdmin ? "No orders." : "You have no orders yet."}
+        </div>
       )}
 
       {!loading && !error && orders.length > 0 && (

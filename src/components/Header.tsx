@@ -5,7 +5,7 @@ import AuthButton from "./AuthButton";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { setSearch } from "../features/products/productSlice";
 import { openCart, closeCart } from "../features/cart/cartSlice";
-import { selectIsLogin } from "../features/authenticate/authenticate";
+import { selectIsLogin, selectRole } from "../features/authenticate/authenticate";
 import { SlidingCart } from "../pages/SlidingCart";
 import { useCallback } from "react";
 
@@ -17,6 +17,8 @@ import { useCallback } from "react";
 const Header = () => {
   const isCartOpen = useAppSelector((state) => state.cart.isOpen);
   const isLogin = useAppSelector(selectIsLogin);
+  const role = useAppSelector(selectRole);
+  const ordersLabel = role === "Admin" ? "All Orders" : "My Orders";
   const dispatch = useAppDispatch();
   const total = useAppSelector((state) => state.cart.total);
   const search = useAppSelector((state) => state.products.search);
@@ -56,7 +58,7 @@ const Header = () => {
                     to="/orders"
                     className="flex items-center text-white font-medium hover:text-purple-300 transition mr-2"
                   >
-                    My Orders
+                    {ordersLabel}
                   </Link>
                 )}
                 <AuthButton />
@@ -116,7 +118,7 @@ const Header = () => {
                   to="/orders"
                   className="flex items-center text-white font-medium hover:text-purple-300 transition mr-2"
                 >
-                  My Orders
+                  {ordersLabel}
                 </Link>
               )}
               <AuthButton />

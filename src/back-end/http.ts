@@ -23,6 +23,15 @@ export function getOrderServiceBaseUrl() {
   return (fromEnv ?? "http://localhost:8083").replace(/\/$/, "");
 }
 
+/**
+ * Payment-service runs on its own port.
+ * Override with VITE_PAYMENT_SERVICE_URL (e.g. http://localhost:8084).
+ */
+export function getPaymentServiceBaseUrl() {
+  const fromEnv = (import.meta as any).env?.VITE_PAYMENT_SERVICE_URL as string | undefined;
+  return (fromEnv ?? "http://localhost:8084").replace(/\/$/, "");
+}
+
 function toFailure(error: unknown, status?: number): ApiFailure {
   const message =
     error instanceof Error ? error.message : typeof error === "string" ? error : "Request failed";
@@ -96,5 +105,13 @@ export async function orderServiceRequest<T>(
   init?: RequestInit & { json?: unknown }
 ): Promise<ApiResult<T>> {
   return request<T>(getOrderServiceBaseUrl(), path, init);
+}
+
+/** Payment-service (e.g. port 8084). */
+export async function paymentServiceRequest<T>(
+  path: string,
+  init?: RequestInit & { json?: unknown; headers?: HeadersInit }
+): Promise<ApiResult<T>> {
+  return request<T>(getPaymentServiceBaseUrl(), path, init);
 }
 
