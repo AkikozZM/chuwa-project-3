@@ -1,0 +1,153 @@
+.signup-container {
+    width: 100%;
+}
+
+
+.signup-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #111827;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-label {
+    display: block;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    outline: none;
+    color: black
+}
+
+.form-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.show-button {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4f46e5;
+    cursor: pointer;
+}
+
+.show-button:focus,
+.show-button:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.show-button:hover {
+    text-decoration: underline;
+}
+
+.submit-button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #6366f1;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #4f46e5;
+}
+
+.signup-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.signup-footer a {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.signup-footer a:hover {
+    text-decoration: underline;
+}
+
+.signup-footer p a {
+    text-decoration: underline;
+}
+
+.form-input.invalid {
+    border-color: #eb5757;
+}
+
+.error-text {
+    display: block;
+    margin-top: 1px;
+    font-size: 14px;
+    color: #eb5757;
+    text-align: right;
+}
+
+.checkbox-group {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #374151;
+}
+
+.form-checkbox {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+.success-popup {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #10b981;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}

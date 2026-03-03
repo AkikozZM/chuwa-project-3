@@ -7,6 +7,7 @@ export interface AuthenticateState {
   isLogin: boolean;
   role: "Admin" | "User" | "";
   location: string;
+  userId: string;
 }
 
 // Define the initial state using that type
@@ -14,6 +15,7 @@ const initialState: AuthenticateState = {
   isLogin: false,
   role: "",
   location: "",
+  userId: "",
 };
 
 export const AuthenticateSlice = createSlice({
@@ -30,14 +32,18 @@ export const AuthenticateSlice = createSlice({
     setLocation: (state, action) => {
       state.location = action.payload;
     },
+    setUserId(state, action: PayloadAction<string>) {
+      state.userId = action.payload;
+    },
   },
 });
 
-export const { setIsLogin, setRole, setLocation } = AuthenticateSlice.actions;
+export const { setIsLogin, setRole, setLocation, setUserId } = AuthenticateSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectIsLogin = (state: RootState) => state.authenticate.isLogin;
 export const selectRole = (state: RootState) => state.authenticate.role;
 export const selectLocation = (state: RootState) => state.authenticate.location;
+export const selectUserId = (state: RootState) => state.authenticate.userId;
 
 export default AuthenticateSlice.reducer;

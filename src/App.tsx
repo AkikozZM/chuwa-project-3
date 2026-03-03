@@ -1,35 +1,127 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import "./App.css";
+import Layout from "./components/Layout";
+import AdminProtectedRoute from "./routes/AdminProtectedRoute";
+import {
+  ErrorPage,
+  HomePage,
+  LoginPage,
+  SignUpPage,
+  SuccessfulPage,
+  ForgetPassword,
+  UpdatePasswordPage,
+  CreateProductPage,
+  EditProductPage,
+  ProductDetailPage,
+  MyOrdersPage,
+  OrderDetailPage,
+} from "./pages";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <HomePage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/error"
+          element={
+            <Layout>
+              <ErrorPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <Layout>
+              <LoginPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <Layout>
+              <SignUpPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/forgot-password/:email/update-password/:token"
+          element={
+            <Layout>
+              <UpdatePasswordPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <Layout>
+              <ForgetPassword />
+            </Layout>
+          }
+        />
+        <Route
+          path="/forgot-password-success"
+          element={
+            <Layout>
+              <SuccessfulPage />
+            </Layout>
+          }
+        />
+        <Route element={<AdminProtectedRoute />}>
+          <Route
+            path="/create-product"
+            element={
+              <Layout>
+                <CreateProductPage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/edit-product"
+            element={
+              <Layout>
+                <EditProductPage />
+              </Layout>
+            }
+          />
+        </Route>
+        <Route
+          path="/product/:id"
+          element={
+            <Layout>
+              <ProductDetailPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <Layout>
+              <MyOrdersPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <Layout>
+              <OrderDetailPage />
+            </Layout>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

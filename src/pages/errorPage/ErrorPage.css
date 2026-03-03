@@ -1,0 +1,66 @@
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  padding: 2rem;
+  width: 100%;
+}
+
+.error-icon {
+  font-size: 4rem; 
+  color: #5048E5;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.error-card {
+  display: flex;
+  flex-direction: column;       
+  justify-content: center;      
+  align-items: center;          
+
+  background: white;
+  padding: 2rem;
+  border-radius: 4px; 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  width: 90vw;                 
+  height: auto;               
+  min-height: 70vh;          
+  text-align: center;
+  align-items: center;
+  margin-left: auto;          
+  margin-right: auto;
+}
+
+
+.error-card h2 {
+  margin-top: 1.5rem;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.home-button {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #6366f1;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.home-button:hover {
+  background-color: #4f46e5;
+}
+
+@media (max-width: 768px) {
+  .error-card {
+    padding: 2rem;
+  }
+}

@@ -1,0 +1,22 @@
+.close-button {
+  position: absolute;
+  top: -0.2rem;
+  right: -1.0rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: grey;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #374151; /* dark gray */
+}
+
+@media (max-width: 768px) {
+  .close-button{
+    top:-0.6rem;
+    right:-1.6rem;
+  }
+}

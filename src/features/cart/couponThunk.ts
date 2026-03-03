@@ -1,4 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { applyCouponAPI } from "../../back-end/APITesting/Coupon.ts";
 
 export const applyCouponThunk = createAsyncThunk(
   "cart/applyCoupon",
@@ -12,7 +13,7 @@ export const applyCouponThunk = createAsyncThunk(
           discountRate: res.data.discountRate,
         };
       } else {
-        return rejectWithValue(res.error?.message || "Failed to apply coupon");
+        return rejectWithValue(res.error || "Failed to apply coupon");
       }
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to apply coupon");

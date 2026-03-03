@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { IProduct } from "../../back-end/models/Product";
+
 import type { RootState } from "../../app/store";
 import { fetchProductsThunk } from "./productThunk";
+import type { IProduct } from "../../back-end/models/Product.ts";
 
 interface ProductsState {
   products: IProduct[];
