@@ -1,35 +1,13 @@
 import type { ApiFailure, ApiResult } from "./types";
 
+/**
+ * Single base URL for all API calls (API Gateway).
+ * Set VITE_API_BASE_URL in .env (e.g. http://localhost:8080).
+ * Paths stay the same; only the origin changes.
+ */
 function getApiBaseUrl() {
   const fromEnv = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
-  return (fromEnv ?? "http://localhost:8081").replace(/\/$/, "");
-}
-
-/**
- * Item-service (products) runs on a different port.
- * Override with VITE_ITEM_SERVICE_URL (e.g. http://localhost:8082).
- */
-export function getItemServiceBaseUrl() {
-  const fromEnv = (import.meta as any).env?.VITE_ITEM_SERVICE_URL as string | undefined;
-  return (fromEnv ?? "http://localhost:8082").replace(/\/$/, "");
-}
-
-/**
- * Order-service runs on its own port.
- * Override with VITE_ORDER_SERVICE_URL (e.g. http://localhost:8083).
- */
-export function getOrderServiceBaseUrl() {
-  const fromEnv = (import.meta as any).env?.VITE_ORDER_SERVICE_URL as string | undefined;
-  return (fromEnv ?? "http://localhost:8083").replace(/\/$/, "");
-}
-
-/**
- * Payment-service runs on its own port.
- * Override with VITE_PAYMENT_SERVICE_URL (e.g. http://localhost:8084).
- */
-export function getPaymentServiceBaseUrl() {
-  const fromEnv = (import.meta as any).env?.VITE_PAYMENT_SERVICE_URL as string | undefined;
-  return (fromEnv ?? "http://localhost:8084").replace(/\/$/, "");
+  return (fromEnv ?? "http://localhost:8080").replace(/\/$/, "");
 }
 
 function toFailure(error: unknown, status?: number): ApiFailure {
@@ -83,7 +61,7 @@ async function request<T>(
   }
 }
 
-/** Auth service (e.g. port 8081). */
+/** All requests go through the API Gateway (single base URL). */
 export async function apiRequest<T>(
   path: string,
   init?: RequestInit & { json?: unknown }
@@ -91,27 +69,27 @@ export async function apiRequest<T>(
   return request<T>(getApiBaseUrl(), path, init);
 }
 
-/** Item-service / products (e.g. port 8082). */
+/** Products — same gateway base URL, path /api/products etc. */
 export async function itemServiceRequest<T>(
   path: string,
   init?: RequestInit & { json?: unknown }
 ): Promise<ApiResult<T>> {
-  return request<T>(getItemServiceBaseUrl(), path, init);
+  return request<T>(getApiBaseUrl(), path, init);
 }
 
-/** Order-service (e.g. port 8083). */
+/** Orders — same gateway base URL, path /api/orders etc. */
 export async function orderServiceRequest<T>(
   path: string,
   init?: RequestInit & { json?: unknown }
 ): Promise<ApiResult<T>> {
-  return request<T>(getOrderServiceBaseUrl(), path, init);
+  return request<T>(getApiBaseUrl(), path, init);
 }
 
-/** Payment-service (e.g. port 8084). */
+/** Payments — same gateway base URL, path /api/payments etc. */
 export async function paymentServiceRequest<T>(
   path: string,
   init?: RequestInit & { json?: unknown; headers?: HeadersInit }
 ): Promise<ApiResult<T>> {
-  return request<T>(getPaymentServiceBaseUrl(), path, init);
+  return request<T>(getApiBaseUrl(), path, init);
 }
 

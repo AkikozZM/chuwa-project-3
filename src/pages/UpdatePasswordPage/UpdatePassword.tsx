@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Card } from '../../components/Card/Card';
 import { updatePasswordAPI } from '../../back-end/APITesting/User.ts';
 import { Link } from 'react-router-dom';
@@ -11,21 +11,17 @@ export interface UpdatePasswordPageProps {
 }
 export const UpdatePasswordPage: React.FC<UpdatePasswordPageProps> = ({onClose}) => {
     const navigate = useNavigate();
-    const { token } = useParams<{ token: string }>();
+    const { token: paramToken, email: paramEmail } = useParams<{ token?: string; email?: string }>();
+    const [searchParams] = useSearchParams();
+    const token = paramToken ?? searchParams.get('token') ?? '';
+    const emailFromUrl = paramEmail ? decodeURIComponent(paramEmail) : '';
 
-    const [email, setEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [emailError, setEmailError] = useState('');
+    const [submitError, setSubmitError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    useEffect(() => {
-        // Email is not needed by the Spring Boot reset-password endpoint,
-        // but we keep it visible for the user if desired.
-        setEmail('');
-    }, [token]);
 
     const handleClose = () => {
         if (onClose) return onClose();
@@ -39,31 +35,30 @@ export const UpdatePasswordPage: React.FC<UpdatePasswordPageProps> = ({onClose})
         // console.log('Submitting reset password form with:', { email, newPassword, confirmPassword, token });
 
         if (!newPassword || !confirmPassword) {
-            setEmailError('All fields are required');
+            setSubmitError('All fields are required');
             return;
         }
         if (!PASSWORD_REGEX.test(newPassword)) {
-            setEmailError('Password must be at least 8 characters long and contain at least one uppercase letter and one lowercase letter');
+            setSubmitError('Password must be at least 8 characters long and contain at least one uppercase letter and one lowercase letter');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            setEmailError('Passwords do not match');
+            setSubmitError('Passwords do not match');
             return;
         }
 
+        setSubmitError('');
         try {
-            // BACKEND (Spring Boot): POST `/api/auth/reset-password`
             const response = await updatePasswordAPI(token || '', newPassword);
-            // console.log('Response from updatePasswordAPI:', response);
             if (response.success) {
                 setSuccessMessage('Password updated successfully');
             } else {
-                setEmailError(response.error || 'Failed to update password');
+                setSubmitError(response.error || 'Failed to update password');
             }
         } catch (error) {
             console.error('Error updating password:', error);
-            setEmailError('An error occurred while updating the password');
+            setSubmitError('An error occurred while updating the password');
         }
     };
 
@@ -78,16 +73,18 @@ export const UpdatePasswordPage: React.FC<UpdatePasswordPageProps> = ({onClose})
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="reset-form custom-reset-form">
-                        <div className="form-group">
-                            <label htmlFor="email" className="form-label">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                readOnly
-                                className="form-input readonly-input"
-                            />
-                        </div>
+                        {emailFromUrl && (
+                            <div className="form-group">
+                                <label htmlFor="email" className="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={emailFromUrl}
+                                    readOnly
+                                    className="form-input readonly-input"
+                                />
+                            </div>
+                        )}
                         <div className="form-group">
                             <label htmlFor="newPassword" className="form-label">New Password</label>
                             <div className="password-input-container">
@@ -122,8 +119,8 @@ export const UpdatePasswordPage: React.FC<UpdatePasswordPageProps> = ({onClose})
                             >{showConfirmPassword ? 'Hide' : 'Show'}</button>
                             </div>
                         </div>
-                        {emailError && (
-                            <div className="error-message">{emailError}</div>
+                        {submitError && (
+                            <div className="error-message">{submitError}</div>
                         )}
                         <button
                             type="submit"

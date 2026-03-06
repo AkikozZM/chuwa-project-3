@@ -23,7 +23,10 @@ export const SuccessfulPage : React.FC<SuccessfulPageProps> = ({ onClose }) => {
                     {icons.EMAIL_SUCCESS}
                 </div>
                 <p className='success-message-success-page'>
-                    We have sent the update password link to your email, please check that!
+                    If that email is registered, we've sent a reset link.
+                </p>
+                <p className='success-subtext'>
+                    In local development, the link is printed in the backend console—copy it into your browser.
                 </p>
             </div>
         </div>

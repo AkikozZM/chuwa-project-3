@@ -3,38 +3,71 @@ import type { ApiResult } from "../types";
 
 export type UserRole = "Admin" | "User";
 
-export type UserData = {
+/** Address DTO – matches backend AddressDto (streetLine1, streetLine2, city, stateOrRegion, postalCode, country). */
+export interface AddressDto {
+  streetLine1?: string;
+  streetLine2?: string;
+  city?: string;
+  stateOrRegion?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+/** Signup request – POST /api/auth/signup. Requires email, username, password; optional role and addresses. */
+export interface SignupRequest {
   email: string;
+  username: string;
   password: string;
   role?: UserRole;
-};
+  shippingAddress?: AddressDto;
+  billingAddress?: AddressDto;
+}
+
+export type UserData = SignupRequest;
 
 export type UserRecord = {
   id: string;
   email: string;
+  username?: string;
   role?: UserRole;
+  shippingAddress?: AddressDto;
+  billingAddress?: AddressDto;
 };
 
 /**
  * Spring Boot auth integration – user-related helpers
  *
- * Implemented backend endpoints:
- * - Sign up:        POST /api/auth/signup
- *   Body:           { "email": string, "password": string, "role"?: string }
- *   role:           "ADMIN" or "USER" (backend typically expects uppercase)
+ * Sign up: POST /api/auth/signup
+ *   Body: { email, username, password, role?, shippingAddress?, billingAddress? }
+ *   Rejects if email or username is already used.
  *
- * - Forgot password: POST /api/auth/forgot-password?resetBaseUrl=<frontend-url>
- *   Body:            { "email": string }
- *
- * - Reset password: POST /api/auth/reset-password
- *   Body:           { "token": string, "newPassword": string }
+ * Forgot password: POST /api/auth/forgot-password?resetBaseUrl=<frontend-url>
+ * Reset password: POST /api/auth/reset-password
  */
 
-export async function createUserAPI(user: UserData): Promise<ApiResult<unknown>> {
-  const { email, password, role } = user;
-  const body: Record<string, string> = { email, password };
+function isAddressEmpty(addr: AddressDto | undefined): boolean {
+  if (!addr) return true;
+  return ![
+    addr.streetLine1,
+    addr.streetLine2,
+    addr.city,
+    addr.stateOrRegion,
+    addr.postalCode,
+    addr.country,
+  ].some((v) => v != null && String(v).trim() !== "");
+}
+
+export async function createUserAPI(user: SignupRequest): Promise<ApiResult<unknown>> {
+  const { email, username, password, role, shippingAddress, billingAddress } = user;
+  const body: Record<string, unknown> = { email, username, password };
   if (role) {
     body.role = role === "Admin" ? "ADMIN" : "USER";
+  }
+  if (shippingAddress && !isAddressEmpty(shippingAddress)) {
+    body.shippingAddress = shippingAddress;
+  }
+  if (billingAddress && !isAddressEmpty(billingAddress)) {
+    body.billingAddress = billingAddress;
   }
   return apiRequest<unknown>("/api/auth/signup", {
     method: "POST",
@@ -50,13 +83,19 @@ export async function findUserAPI(_: string): Promise<ApiResult<{ user: UserReco
   };
 }
 
+/**
+ * Forgot password — POST /api/auth/forgot-password?resetBaseUrl=<your-reset-page-url>
+ * Body: { email }. No auth header.
+ * Backend always returns 200; show generic message. In local dev the reset link may be
+ * logged to the backend console (copy into browser).
+ */
 export async function forgotPasswordAPI(
   email: string
 ): Promise<ApiResult<{ sent: boolean }>> {
   const resetBaseUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/reset-password`
-      : "http://localhost:3000/reset-password";
+      : "http://localhost:5173/reset-password";
 
   const q = new URLSearchParams({ resetBaseUrl });
 

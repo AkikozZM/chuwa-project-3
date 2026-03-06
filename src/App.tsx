@@ -62,6 +62,14 @@ function App() {
           }
         />
         <Route
+          path="/reset-password"
+          element={
+            <Layout>
+              <UpdatePasswordPage />
+            </Layout>
+          }
+        />
+        <Route
           path="/forgot-password"
           element={
             <Layout>
